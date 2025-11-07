@@ -1,0 +1,26 @@
+{
+  "name": "napstablook-v3",
+  "version": "0.1.0",
+  "description": "Compact Discord music bot without Lavalink, built with Node.js.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "lint": "eslint .",
+    "register-commands": "node ./src/register-commands.js"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.18.0",
+    "discord.js": "^14.15.2",
+  "dotenv": "^16.4.5",
+  "opusscript": "^0.0.8",
+  "yt-dlp-exec": "^1.0.2",
+  "yt-search": "^2.10.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
