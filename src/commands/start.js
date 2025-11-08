@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
   .setDescription('Start the modded Minecraft server.');
 
 export async function execute(interaction) {
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ ephemeral: false });
 
   if (!START_ENDPOINT) {
     await interaction.editReply(
