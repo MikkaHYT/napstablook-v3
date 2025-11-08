@@ -50,14 +50,14 @@ export async function execute(interaction) {
 
     if (payload?.success === false) {
       await interaction.editReply(
-        payload?.error || 'Aternos responded but did not accept the start request. Check your credentials.'
+        payload?.error || 'Aternos responded but did not accept the start request. Check the credentials on the server.'
       );
       return;
     }
 
-    await interaction.editReply('Server start request sent to Aternos. It will take a minute or two to come online.');
+    await interaction.editReply('Server starting.. It will take a couple minutes to come online but you can check the status with `/status`.');
   } catch (error) {
     console.error('Failed to trigger Aternos server start', error);
-    await interaction.editReply('Unable to reach the Aternos API. Verify your credentials and try again.');
+    await interaction.editReply('Unable to reach the server. Verify the credentials on the server and try again.');
   }
 }
