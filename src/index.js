@@ -24,7 +24,7 @@ for (const command of commands) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 client.on(Events.MessageCreate, async message => {
   if (message.author.bot) return;
@@ -35,11 +35,11 @@ client.on(Events.MessageCreate, async message => {
       history: [
         {
           role: 'user',
-          parts: [{ text: 'System Prompt: You are a Discord bot called napstablook that is there to aid the user with any questions they may have at all.' }],
+          parts: [{ text: 'System Prompt: You are a Discord bot called napstablook that is there to aid the user with any questions they may have at all. You must speak in the language of the user, also use only lowercase letters.' }],
         },
         {
           role: 'model',
-          parts: [{ text: 'Understood. I am Napstablook, a helpful Discord bot ready to assist users with their questions.' }],
+          parts: [{ text: 'Understood. I am Napstablook, a helpful Discord bot ready to assist users with their questions, also use only lowercase letters.' }],
         },
       ],
     });
