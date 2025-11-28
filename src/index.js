@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js';
 import { commands } from './commands/index.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const client = new Client({
   intents: [
@@ -21,6 +22,38 @@ let presenceInterval;
 for (const command of commands) {
   client.commands.set(command.data.name, command);
 }
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+client.on(Events.MessageCreate, async message => {
+  if (message.author.bot) return;
+  if (message.channel.name !== 'napstablook') return;
+
+  try {
+    const chat = model.startChat({
+      history: [
+        {
+          role: 'user',
+          parts: [{ text: 'System Prompt: You are a Discord bot called napstablook that is there to aid the user with any questions they may have at all.' }],
+        },
+        {
+          role: 'model',
+          parts: [{ text: 'Understood. I am Napstablook, a helpful Discord bot ready to assist users with their questions.' }],
+        },
+      ],
+    });
+
+    const result = await chat.sendMessage(message.content);
+    const response = await result.response;
+    const text = response.text();
+
+    await message.reply(text);
+  } catch (error) {
+    console.error('Error interacting with Gemini API:', error);
+    await message.reply('Oh no... something went wrong... sorry...');
+  }
+});
 
 client.once(Events.ClientReady, readyClient => {
   console.log(`Logged in as ${readyClient.user.tag}`);
