@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js';
 import { commands } from './commands/index.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { initDb, addMessage, getHistory } from './db.js';
 
 const client = new Client({
   intents: [
@@ -26,27 +27,35 @@ for (const command of commands) {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
+// Initialize database
+initDb().catch(console.error);
+
 client.on(Events.MessageCreate, async message => {
   if (message.author.bot) return;
   if (message.channel.name !== 'napstablook') return;
 
   try {
+    const history = await getHistory(message.author.id);
     const chat = model.startChat({
       history: [
         {
           role: 'user',
-          parts: [{ text: 'System Prompt: You are a Discord bot called napstablook that is there to aid the user with any questions they may have at all. You must speak in the language of the user, also use only lowercase letters.' }],
+          parts: [{ text: 'System Prompt: You are a Discord bot called napstablook that is there to aid the user with any questions they may have at all. You must speak in the language of the user, also use only lowercase letters. Your creator is Mikka, he wrote you, so when you are talking to him, you can request features to be added or fixed for yourself.' }],
         },
         {
           role: 'model',
           parts: [{ text: 'Understood. I am Napstablook, a helpful Discord bot ready to assist users with their questions, also use only lowercase letters.' }],
         },
+        ...history
       ],
     });
 
     const result = await chat.sendMessage(message.content);
     const response = await result.response;
     const text = response.text();
+
+    await addMessage(message.author.id, 'user', message.content);
+    await addMessage(message.author.id, 'model', text);
 
     await message.reply(text);
   } catch (error) {
